@@ -1,0 +1,245 @@
+src:
+  structure.yaml:
+    content: |-
+      AI占いサービスの要件定義。
+      ECサイト(Stores)で決済後、顧客がGoogleフォームに情報を入力し、AIが鑑定結果を生成してPDFをメール配信するサービス。
+      
+      主要コンポーネント:
+      - ECサイト連携: Stores決済検知
+      - 自動フォーム送信: 顧客へのフォームリンク自動送信
+      - 質問フォーム: 鑑定に必要な情報収集
+      - データ処理: フォーム回答の処理と検証
+      - AI鑑定生成: Claude APIによる占い結果生成
+      - PDF生成: 鑑定結果のPDF変換
+      - 管理機能: 結果確認・編集・承認
+      - メール配信: PDFの顧客への送信
+      
+      使用技術:
+      - Stores: ECサイト
+      - Zapier: 外部サービス連携
+      - Google Forms/Sheets: データ収集・管理
+      - Google Apps Script: バックエンド処理
+      - Claude API: AI鑑定生成
+      - Gmail API: メール送信
+      
+      非機能要件:
+      - 処理能力: 1日20件以上
+      - 処理時間: 10分以内
+      - 稼働率: 99.5%以上
+      - セキュリティ: 個人情報暗号化、アクセス制御
+      
+      個人開発の制約:
+      - 予算: 最小限のAPI/サービス利用料
+      - 時間: 6週間の開発期間
+      - 技術: Google Apps Script処理時間制限(6分)
+      
+      agent選定理由: claude-3-5-sonnet-20241022は複雑な要件定義の理解と構造化に優れているため。
+    dependency: []
+    agent: "claude-3-5-sonnet-20241022"
+    api: []
+  ecIntegration:
+    storesWebhook.js:
+      content: |-
+        Storesの決済完了Webhookを処理するスクリプト。
+        - 決済完了イベントの受信と検証
+        - 顧客情報の抽出（メールアドレス、注文ID、商品情報）
+        - フォーム送信システムへのトリガー発行
+        - エラー処理とログ記録
+        - セキュリティ検証（署名確認など）
+        
+        agent選定理由: gemini-2.0-flash-expはWebhook処理と外部APIとの連携に最適化されているため。
+      dependency: 
+        - src/formAutomation/formLinkSender.js
+      agent: "gemini-2.0-flash-exp"
+      api: []
+  formAutomation:
+    formLinkSender.js:
+      content: |-
+        顧客へフォームリンクを自動送信するスクリプト。
+        - ユニークなGoogleフォームURLの生成
+        - 有効期限設定（3日間）
+        - メールテンプレート適用
+        - Gmail APIを使用したメール送信
+        - 送信状況の記録
+        - エラーハンドリングと再送機能
+        
+        agent選定理由: gemini-2.0-flash-expはAPIとの連携処理に適しており、高速処理が可能なため。
+      dependency: 
+        - src/formManagement/googleFormCreator.js
+        - src/mail/mailSender.js
+      agent: "gemini-2.0-flash-exp"
+      api: []
+  formManagement:
+    googleFormCreator.js:
+      content: |-
+        占い用Googleフォームを作成・管理するスクリプト。
+        - フォームテンプレート定義
+        - 必須質問項目設定（注文ID、氏名、生年月日、相談内容等）
+        - 入力検証ルール適用
+        - Google Sheetsとの連携設定
+        - フォームの有効期限管理
+        - 回答データのシート記録処理
+        
+        agent選定理由: claude-3-5-sonnet-20241022はフォーム設計の複雑な要件理解に優れているため。
+      dependency: []
+      agent: "claude-3-5-sonnet-20241022"
+      api: 
+        - "google-forms-api"
+  dataProcessing:
+    formResponseHandler.js:
+      content: |-
+        Googleフォームの回答を処理するスクリプト。
+        - 新規回答の検知とデータ抽出
+        - データ検証（必須項目、形式チェック）
+        - データ整形（AI処理用フォーマット変換）
+        - エラーデータの管理者通知
+        - 処理状況の記録
+        - AI鑑定生成システムへのトリガー
+        
+        agent選定理由: gemini-2.0-flash-expはデータ処理の高速化に適しているため。
+      dependency:
+        - src/aiFortune/claudeApiManager.js
+      agent: "gemini-2.0-flash-exp"
+      api: 
+        - "google-sheets-api"
+  aiFortune:
+    claudeApiManager.js:
+      content: |-
+        Claude APIを利用して占い鑑定結果を生成するスクリプト。
+        - 最適化されたプロンプトテンプレート管理
+        - Claude APIへのリクエスト構築と送信
+        - レスポンス処理とエラーハンドリング
+        - 鑑定結果のデータベース保存
+        - API使用量とコスト監視
+        - 再試行ロジックの実装
+        
+        agent選定理由: claude-3-5-sonnet-20241022はAI APIとの連携と複雑なプロンプト管理に優れているため。
+      dependency:
+        - src/aiFortune/promptTemplates.js
+      agent: "claude-3-5-sonnet-20241022"
+      api: 
+        - "claude-api"
+    promptTemplates.js:
+      content: |-
+        占い鑑定用のプロンプトテンプレートを管理するスクリプト。
+        - 複数の占いタイプ別テンプレート定義
+        - 顧客データの埋め込みロジック
+        - プロンプト最適化機能
+        - テンプレートのバージョン管理
+        - 管理者によるテンプレート編集インターフェース
+        
+        agent選定理由: claude-3-5-sonnet-20241022はプロンプト設計と自然言語処理に特化しているため。
+      dependency: []
+      agent: "claude-3-5-sonnet-20241022"
+      api: []
+  pdfGeneration:
+    pdfCreator.js:
+      content: |-
+        鑑定結果をPDFに変換するスクリプト。
+        - 統一デザインテンプレートの適用
+        - 鑑定結果テキストの整形と配置
+        - PDFのメタデータ設定
+        - Google Driveへの保存
+        - ファイル命名規則の適用
+        - PDF生成エラーのハンドリング
+        
+        agent選定理由: claude-3-5-sonnet-20241022はドキュメント生成と書式設定に強みがあるため。
+      dependency:
+        - src/aiFortune/claudeApiManager.js
+      agent: "claude-3-5-sonnet-20241022"
+      api: []
+  mail:
+    mailSender.js:
+      content: |-
+        メール送信を管理するスクリプト。
+        - テンプレートメール管理
+        - Gmail API連携
+        - 顧客へのPDF鑑定結果送信
+        - 管理者への通知メール送信
+        - メール送信状況の追跡
+        - エラーハンドリングと再送ロジック
+        
+        agent選定理由: gpt-4o-miniはメール送信処理の実装に適しており、軽量な処理に最適化されているため。
+      dependency:
+        - src/pdfGeneration/pdfCreator.js
+      agent: "gpt-4o-mini"
+      api: 
+        - "gmail-api"
+  admin:
+    dashboard.js:
+      content: |-
+        管理者用ダッシュボードのスクリプト。
+        - 鑑定依頼一覧の表示
+        - AI生成結果のプレビュー機能
+        - 編集・承認・送信機能
+        - 顧客データ管理機能
+        - システム稼働状況モニタリング
+        - API使用量とコスト表示
+        - エラーログの閲覧
+        
+        agent選定理由: claude-3-5-sonnet-20241022は複雑なUI設計と管理機能の実装に優れているため。
+      dependency:
+        - src/aiFortune/claudeApiManager.js
+        - src/pdfGeneration/pdfCreator.js
+        - src/mail/mailSender.js
+      agent: "claude-3-5-sonnet-20241022"
+      api: []
+  utils:
+    errorHandler.js:
+      content: |-
+        エラー処理を一元管理するユーティリティスクリプト。
+        - 各種エラーの捕捉と分類
+        - エラーログの記録
+        - 管理者への通知機能
+        - 自動リカバリーロジック
+        - エラー分析レポート生成
+        
+        agent選定理由: gpt-4o-miniはエラー処理ロジックの実装に適しているため。
+      dependency:
+        - src/mail/mailSender.js
+      agent: "gpt-4o-mini"
+      api: []
+    dataSecurity.js:
+      content: |-
+        データセキュリティを管理するユーティリティスクリプト。
+        - 個人情報の暗号化・復号化
+        - アクセス制御ロジック
+        - セキュリティログの記録
+        - データ保持期間管理
+        - 自動削除機能
+        
+        agent選定理由: gpt-4oはセキュリティ機能の実装に強みがあるため。
+      dependency: []
+      agent: "gpt-4o"
+      api: []
+  documentation:
+    systemDesign.md:
+      content: |-
+        AI占いサービスのシステム設計書。
+        - アーキテクチャ概要
+        - 各コンポーネントの詳細説明
+        - データフロー図
+        - シーケンス図
+        - API仕様
+        - セキュリティ設計
+        - 拡張性計画
+        
+        agent選定理由: claude-3-5-sonnet-20241022は技術文書作成に優れた能力を持っているため。
+      dependency: []
+      agent: "claude-3-5-sonnet-20241022"
+      api: []
+    operationManual.md:
+      content: |-
+        AI占いサービスの運用マニュアル。
+        - 日次/週次運用タスク
+        - 障害対応手順
+        - バックアップと復旧手順
+        - API使用量管理
+        - セキュリティ対策
+        - メンテナンス計画
+        - KPI測定と分析方法
+        
+        agent選定理由: claude-3-5-sonnet-20241022はマニュアル作成と手順書の構造化に強みがあるため。
+      dependency: []
+      agent: "claude-3-5-sonnet-20241022"
+      api: []

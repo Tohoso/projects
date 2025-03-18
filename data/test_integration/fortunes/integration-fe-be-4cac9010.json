@@ -1,0 +1,15 @@
+{
+  "id": "integration-fe-be-4cac9010",
+  "createdAt": "2025-03-14T14:37:22.315Z",
+  "updatedAt": "2025-03-14T14:37:22.321Z",
+  "status": "sent",
+  "customerInfo": {
+    "id": "cust-9b086d71",
+    "email": "test-integration@example.com",
+    "name": "統合テスト太郎"
+  },
+  "content": "【全体運】\n\nフロントエンドとバックエンドの連携テスト - 編集後の内容です。素晴らしい運勢が待っています！",
+  "editedByAdmin": true,
+  "sentAt": "2025-03-14T14:37:22.321Z",
+  "pdfPath": "/tmp/fortune_integration-fe-be-4cac9010.pdf"
+}

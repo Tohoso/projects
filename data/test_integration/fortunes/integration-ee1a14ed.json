@@ -1,0 +1,15 @@
+{
+  "id": "integration-ee1a14ed",
+  "createdAt": "2025-03-14T14:37:22.263Z",
+  "updatedAt": "2025-03-14T14:37:22.268Z",
+  "status": "sent",
+  "customerInfo": {
+    "id": "cust-b9b086ef",
+    "email": "test-integration@example.com",
+    "name": "統合テスト太郎"
+  },
+  "content": "【全体運】\n\n編集後の素晴らしい鑑定結果です。運気が急上昇します。\n\n【仕事運】\n\n★★★★★\n\n仕事運も絶好調です！",
+  "editedByAdmin": true,
+  "sentAt": "2025-03-14T14:37:22.269Z",
+  "pdfPath": "/tmp/fortune_integration-ee1a14ed.pdf"
+}

@@ -1,0 +1,17 @@
+{
+  "id": "integration-error-70fff392",
+  "createdAt": "2025-03-14T14:37:22.274Z",
+  "updatedAt": "2025-03-14T14:37:22.274Z",
+  "status": "error",
+  "customerInfo": {
+    "id": "cust-7150e299",
+    "email": "test-integration@example.com",
+    "name": "統合テスト太郎"
+  },
+  "content": "【全体運】\n\nPDF生成失敗用のテストデータです。",
+  "editedByAdmin": true,
+  "error": {
+    "message": "PDF生成に失敗しました",
+    "timestamp": "2025-03-14T14:37:22.278Z"
+  }
+}
