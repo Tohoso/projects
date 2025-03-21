@@ -8,6 +8,7 @@
     "dev": "nodemon index.js",
     "test": "jest",
     "test:integration": "jest --testPathPattern=integration",
+    "test:e2e": "jest --testPathPattern=e2e",
     "test:external": "jest --testPathPattern=external",
     "test:external:claude": "jest --testPathPattern=external/claude-api",
     "test:external:payment": "jest --testPathPattern=external/payment-service",
@@ -29,7 +30,8 @@
     "multer": "^1.4.5-lts.1",
     "node-cron": "^3.0.3",
     "pdfkit": "^0.14.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",
