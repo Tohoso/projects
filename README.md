@@ -204,4 +204,72 @@ ECサイトの商品説明やメール案内に使える文例：
 
 ---
 
+## 新機能: 自動PDF生成とメール送信 (2024年追加)
+
+注文が確定した際に、自動的に占い結果PDFを生成し、顧客にメールで送信する機能を実装しました。
+
+### 主な機能
+
+1. **自動PDF生成**
+   - 占い結果をカスタマイズされたPDFとして生成
+   - 顧客情報、商品情報、占い結果を含む美しいデザイン
+   - 日本語フォントに対応
+
+2. **メール送信**
+   - 生成されたPDFを添付ファイルとして自動送信
+   - カスタマイズ可能なメールテンプレート
+   - Gmail APIを利用した安定した配信
+
+3. **自動処理システム**
+   - 注文ウェブフック受信時の即時処理
+   - スケジューラーによる定期的な保留注文の処理
+   - 管理画面からの手動処理機能
+
+### 設定方法
+
+1. 環境変数の設定:
+   ```
+   # 自動PDF生成設定
+   AUTO_GENERATE_PDF=true
+   FORTUNE_SCHEDULER_CRON=*/5 * * * *
+   PROCESS_PENDING_ON_STARTUP=true
+   
+   # PDF設定
+   PDF_TEMP_DIR=./temp
+   PDF_FONT_PATH=./fonts/NotoSansJP-Regular.otf
+   ```
+
+2. 必要なパッケージ:
+   ```bash
+   npm install --save pdfkit node-cron nodemailer
+   ```
+
+3. フォントの設定:
+   - フォントディレクトリ (`fonts/`) を作成
+   - 日本語対応フォント (例: NotoSansJP-Regular.otf) を配置
+
+### API エンドポイント
+
+| エンドポイント                    | 説明                             |
+|----------------------------------|----------------------------------|
+| GET /api/fortune-worker/status   | 処理状況を確認                    |
+| POST /api/fortune-worker/run     | 待機中のすべての注文を処理        |
+| POST /api/fortune-worker/order/:id | 指定した注文IDのみ処理           |
+
+### スケジューラー
+
+スケジューラーは `ENABLE_SCHEDULER=true` の場合に有効になり、`FORTUNE_SCHEDULER_CRON` で指定した間隔で実行されます。デフォルトでは5分ごとに実行されます。
+
+### 処理フロー
+
+1. STORES 決済完了 → Webhook受信
+2. 顧客情報と注文情報を保存
+3. 占い生成リクエスト登録
+4. APIが占い結果を生成
+5. PDF生成処理が実行（即時または定期的）
+6. 顧客にPDFをメールで送信
+7. 注文ステータスを更新
+
+---
+
 © 2025 AI占いサービス All Rights Reserved
